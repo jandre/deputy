@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "hashicorp/precise64"
+  config.vm.network "private_network", ip: "192.168.44.10"
+  # config.vm.network "public_network"
+#
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+  end
+
+  config.vm.provision "shell", path: "deploy/golang.sh"
+ 
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update -y
+    apt-get install curl git software-properties-common python-software-properties -y
+    echo 'root:demo' | chpasswd
+    useradd jandre -s /bin/bash -m -g root 
+    echo 'jandre:demo' | chpasswd
+    echo 'jandre  ALL=(ALL:ALL) ALL' >> /etc/sudoers
+    go get -v github.com/jandre/deputy/server/agent/...
+    go install github.com/jandre/deputy/server/agent
+    curl -s https://s3.amazonaws.com/download.draios.com/stable/install-falco | sudo bash
+    mkdir -p /var/log/falco
+    touch /var/log/falco/events.log
+  SHELL
+
+  config.vm.provision "file", source: "deploy/falco.yaml", destination: "/tmp/falco.yaml"
+  config.vm.provision "file", source: "deploy/falco_rules.yaml", destination: "/tmp/falco_rules.yaml"
+  config.vm.provision "file", source: "deploy/deputy.conf", destination: "/tmp/deputy.conf"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    mv /tmp/falco.yaml /etc/falco.yaml
+    mv /tmp/deputy.conf /etc/init/deputy.conf
+    mv /tmp/falco_rules.yaml /etc/falco_rules.yaml
+    sudo service falco restart
+    service deputy start
+  SHELL
+
+end

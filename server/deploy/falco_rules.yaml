@@ -1,0 +1,180 @@
+#############
+# Definitions
+#############
+
+# File actions
+
+- macro: open_write
+  condition: >
+    (evt.type=open or evt.type=openat) and
+    fd.typechar='f' and
+    (evt.arg.flags contains O_WRONLY or
+    evt.arg.flags contains O_RDWR or
+    evt.arg.flags contains O_CREAT or
+    evt.arg.flags contains O_TRUNC)
+- macro: open_read
+  condition: >
+    (evt.type=open or evt.type=openat) and
+    fd.typechar='f' and
+    (evt.arg.flags contains O_RDONLY or
+    evt.arg.flags contains O_RDWR)
+
+- macro: rename
+  condition: syscall.type = rename
+- macro: mkdir
+  condition: syscall.type = mkdir
+- macro: remove
+  condition: syscall.type in (remove, rmdir, unlink, unlink_at)
+
+- macro: modify
+  condition: rename or remove
+  
+- macro: spawn_process
+  condition: syscall.type = execve and evt.dir=<
+
+# File categories
+- macro: terminal_file_fd
+  condition: fd.name=/dev/ptmx or fd.directory=/dev/pts
+- macro: bin_dir
+  condition: fd.directory in (/bin, /sbin, /usr/bin, /usr/sbin)
+
+- macro: bin_dir_mkdir
+  condition: evt.arg[0] contains /bin/ or evt.arg[0] contains /sbin/ or evt.arg[0] contains /usr/bin/ or evt.arg[0] contains /usr/sbin/
+- macro: bin_dir_rename
+  condition: evt.arg[1] contains /bin/ or evt.arg[1] contains /sbin/ or evt.arg[1] contains /usr/bin/ or evt.arg[1] contains /usr/sbin/
+
+- macro: etc_dir
+  condition: fd.directory contains /etc
+
+- macro: ubuntu_so_dirs
+  condition: fd.directory contains /lib/x86_64-linux-gnu or fd.directory contains /usr/lib/x86_64-linux-gnu or fd.directory contains /usr/lib/sudo
+- macro: centos_so_dirs
+  condition: fd.directory contains /lib64 or fd.directory contains /user/lib64 or fd.directory contains /usr/libexec
+- macro: linux_so_dirs
+  condition: ubuntu_so_dirs or centos_so_dirs or fd.name=/etc/ld.so.cache
+
+- macro: coreutils_binaries
+  condition: >
+    proc.name in (truncate, sha1sum, numfmt, fmt, fold, uniq, cut, who,
+    groups, csplit, sort, expand, printf, printenv, unlink, tee, chcon, stat,
+    basename, split, nice, yes, whoami, sha224sum, hostid, users, stdbuf,
+    base64, unexpand, cksum, od, paste, nproc, pathchk, sha256sum, wc, test,
+    comm, arch, du, factor, sha512sum, md5sum, tr, runcon, env, dirname,
+    tsort, join, shuf, install, logname, pinky, nohup, expr, pr, tty, timeout,
+    tail, [, seq, sha384sum, nl, head, id, mkfifo, sum, dircolors, ptx, shred,
+    tac, link, chroot, vdir, chown, touch, ls, dd, uname, true, pwd, date,
+    chgrp, chmod, mktemp, cat, mknod, sync, ln, false, rm, mv, cp, echo,
+    readlink, sleep, stty, mkdir, df, dir, rmdir, touch)
+- macro: adduser_binaries
+  condition: proc.name in (adduser, deluser, addgroup, delgroup)
+- macro: login_binaries
+  condition: proc.name in (bin, login, su, sbin, nologin, bin, faillog, lastlog, newgrp, sg)
+
+# dpkg -L passwd | grep bin | xargs -L 1 basename | tr "\\n" ","
+- macro: passwd_binaries
+  condition: >
+    proc.name in (sbin, shadowconfig, sbin, grpck, pwunconv, grpconv, pwck,
+    groupmod, vipw, pwconv, useradd, newusers, cppw, chpasswd, usermod,
+    groupadd, groupdel, grpunconv, chgpasswd, userdel, bin, chage, chsh,
+    gpasswd, chfn, expiry, passwd, vigr, cpgr)
+
+# repoquery -l shadow-utils | grep bin | xargs -L 1 basename | tr "\\n" ","
+- macro: shadowutils_binaries
+  condition: >
+    proc.name in (chage, gpasswd, lastlog, newgrp, sg, adduser, chpasswd,
+    groupadd, groupdel, groupmems, groupmod, grpck, grpconv, grpunconv,
+    newusers, pwck, pwconv, pwunconv, useradd, userdel, usermod, vigr, vipw)
+
+- macro: docker_binaries
+  condition: proc.name in (docker, exe)
+
+- macro: http_server_binaries
+  condition: proc.name in (nginx, httpd, httpd-foregroun, lighttpd)
+
+- macro: db_server_binaries
+  condition: proc.name in (mysqld)
+
+- macro: server_binaries
+  condition: http_server_binaries or db_server_binaries or docker_binaries or proc.name in (sshd)
+
+- macro: package_mgmt_binaries
+  condition: proc.name in (dpkg, rpm)
+
+# A canonical set of processes that run other programs with different
+# privileges or as a different user.
+- macro: userexec_binaries
+  condition: proc.name in (sudo, su)
+
+- macro: system_binaries
+  condition: coreutils_binaries or adduser_binaries or login_binaries or passwd_binaries or shadowutils_binaries
+
+- macro: mail_binaries
+  condition: proc.name in (sendmail, postfix, procmail)
+
+- macro: sensitive_files
+  condition: fd.name contains /etc/shadow or fd.name = /etc/sudoers or fd.directory = /etc/sudoers.d or fd.directory = /etc/pam.d or fd.name = /etc/pam.conf
+
+# Indicates that the process is new. Currently detected using time
+# since process was started, using a threshold of 5 seconds.
+- macro: proc_is_new
+  condition: proc.duration <= 5000000000
+
+# Network
+- macro: inbound
+  condition: (syscall.type=listen and evt.dir=>) or (syscall.type=accept and evt.dir=<)
+
+# Currently sendto is an ignored syscall, otherwise this could also check for (syscall.type=sendto and evt.dir=>)
+- macro: outbound
+  condition: syscall.type=connect and evt.dir=< and (fd.typechar=4 or fd.typechar=6)
+
+- macro: ssh_port
+  condition: fd.lport=22
+
+# Ssh
+- macro: ssh_error_message
+  condition: evt.arg.data contains "Invalid user" or evt.arg.data contains "preauth"
+
+# System
+- macro: modules
+  condition: syscall.type in (delete_module, init_module)
+- macro: container
+  condition: container.id != host
+- macro: interactive
+  condition: (proc.aname=sshd and proc.name != sshd) or proc.name=systemd-logind
+- macro: syslog
+  condition: fd.name = /dev/log
+- macro: cron
+  condition: proc.name in (cron, crond)
+- macro: parent_cron
+  condition: proc.pname in (cron, crond)
+
+# System users that should never log into a system. Consider adding your own
+# service users (e.g. 'apache' or 'mysqld') here.
+- macro: system_users
+  condition: user.name in (bin, daemon, games, lp, mail, nobody, sshd, sync, uucp, www-data)
+
+- macro: not_deputy_agent 
+  condition: proc.name != agent
+
+
+
+################
+##### RULES
+################
+#
+- rule: privilege_escalation 
+  desc: Privilege escaltion
+  condition: userexec_binaries and not_deputy_agent and evt.type=execve 
+  output: ":user=%user.name: Privilege escalation detected. (user=%user.name command=%proc.cmdline)"
+  priority: WARNING
+
+
+# sockfamily ip is to exclude certain processes (like 'groups') that communicate on unix-domain sockets
+- rule: system_binaries_network_activity
+  desc: any network activity performed by system binaries that are not expected to send or receive any network traffic
+  condition: ((inbound or outbound) and (fd.sockfamily = ip)) and not_deputy_agent and fd.name != '' 
+  output: ":user=%user.name: Suspicious binary sent/received network traffic (user=%user.name command=%proc.cmdline connec
+tion=%fd.name type=%evt.type)"
+  priority: WARNING
+
+

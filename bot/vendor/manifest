@@ -1,0 +1,134 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "bitbucket.org/ckvist/twilio/twirest",
+			"repository": "https://bitbucket.org/ckvist/twilio",
+			"revision": "b4849591942a683391359f4a553b4a1e6a221d33",
+			"branch": "master",
+			"path": "/twirest"
+		},
+		{
+			"importpath": "github.com/BeepBoopHQ/go-slackbot",
+			"repository": "https://github.com/BeepBoopHQ/go-slackbot",
+			"revision": "58027c0d5238a0604305652ea526b3c18a7cead1",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/Sirupsen/logrus",
+			"repository": "https://github.com/Sirupsen/logrus",
+			"revision": "cd7d1bbe41066b6c1f19780f895901052150a575",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/carlosdp/twiliogo",
+			"repository": "https://github.com/carlosdp/twiliogo",
+			"revision": "0a85fda8d6e854bdbefa188be21a11bf37c8a6f4",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/chris-skud/go-wit",
+			"repository": "https://github.com/chris-skud/go-wit",
+			"revision": "c5c44784af9f70ebeb2b5008fbdfab346ec0acaf",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/davecgh/go-spew/spew",
+			"repository": "https://github.com/davecgh/go-spew",
+			"revision": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d",
+			"branch": "master",
+			"path": "/spew"
+		},
+		{
+			"importpath": "github.com/gin-gonic/gin",
+			"repository": "https://github.com/gin-gonic/gin",
+			"revision": "542be2fe77724f800fcab7eb6c01a4e597fb8506",
+			"branch": "develop"
+		},
+		{
+			"importpath": "github.com/golang/protobuf/proto",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "7cc19b78d562895b13596ddce7aafb59dd789318",
+			"branch": "master",
+			"path": "/proto"
+		},
+		{
+			"importpath": "github.com/golang/protobuf/proto/testdata",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "7cc19b78d562895b13596ddce7aafb59dd789318",
+			"branch": "master",
+			"path": "/proto/testdata"
+		},
+		{
+			"importpath": "github.com/golang/protobuf/ptypes/any",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "7cc19b78d562895b13596ddce7aafb59dd789318",
+			"branch": "master",
+			"path": "/ptypes/any"
+		},
+		{
+			"importpath": "github.com/manucorporat/sse",
+			"repository": "https://github.com/manucorporat/sse",
+			"revision": "ee05b128a739a0fb76c7ebd3ae4810c1de808d6d",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/natebrennand/twiliogo",
+			"repository": "https://github.com/natebrennand/twiliogo",
+			"revision": "e46686c8a915025f15f4c0c2bcdbc287e7058e9c",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nlopes/slack",
+			"repository": "https://github.com/nlopes/slack",
+			"revision": "e337a7316d3fe9aa55b7063035d6d32f3dbcaeb9",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/pmezard/go-difflib/difflib",
+			"repository": "https://github.com/pmezard/go-difflib",
+			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+			"branch": "master",
+			"path": "/difflib"
+		},
+		{
+			"importpath": "github.com/stretchr/objx",
+			"repository": "https://github.com/stretchr/objx",
+			"revision": "1a9d0bb9f541897e62256577b352fdbc1fb4fd94",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/stretchr/testify/assert",
+			"repository": "https://github.com/stretchr/testify",
+			"revision": "6cb3b85ef5a0efef77caef88363ec4d4b5c0976d",
+			"branch": "master",
+			"path": "/assert"
+		},
+		{
+			"importpath": "github.com/stretchr/testify/mock",
+			"repository": "https://github.com/stretchr/testify",
+			"revision": "6cb3b85ef5a0efef77caef88363ec4d4b5c0976d",
+			"branch": "master",
+			"path": "/mock"
+		},
+		{
+			"importpath": "golang.org/x/net/websocket",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "1b27761f1cd4840a914b5255e4357385091562e5",
+			"branch": "master",
+			"path": "/websocket"
+		},
+		{
+			"importpath": "gopkg.in/go-playground/validator.v8",
+			"repository": "https://gopkg.in/go-playground/validator.v8",
+			"revision": "014792cf3e266caff1e916876be12282b33059e0",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/yaml.v2",
+			"repository": "https://gopkg.in/yaml.v2",
+			"revision": "a83829b6f1293c91addabc89d0571c246397bbf4",
+			"branch": "v2"
+		}
+	]
+}

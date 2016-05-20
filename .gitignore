@@ -1,0 +1,5 @@
+*.sw*
+bin
+pkg
+.DS_Store
+bot/Makefile

@@ -1,0 +1,11 @@
+bot:
+  build: bot/
+  environment:
+    SLACK_TOKEN: $SLACK_TOKEN
+    JEN_PHONE: $JEN_PHONE
+    TWILIO_SID: $TWILIO_SID
+    TWILIO_TOKEN: $TWILIO_TOKEN
+    TWILIO_PHONE: $TWILIO_PHONE
+  ports:
+    - "8080:8080"
+
